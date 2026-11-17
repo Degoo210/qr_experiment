@@ -1,0 +1,91 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Caíste (con cariño)</title>
+<style>
+  :root{--bg:#fff3d6;--ink:#1d1a16;--accent:#e4262c;--soft:#6b6257;--card:#fffaf0}
+  @media (prefers-color-scheme:dark){:root{--bg:#1b1712;--ink:#fbf2de;--accent:#ff5a5f;--soft:#b9ad9a;--card:#26211a}}
+  *{box-sizing:border-box}
+  body{margin:0;min-height:100vh;background:var(--bg);color:var(--ink);font:18px/1.5 Georgia,"Times New Roman",serif;
+       display:flex;justify-content:center;padding:env(safe-area-inset-top) 20px env(safe-area-inset-bottom)}
+  main{width:100%;max-width:34rem;padding:36px 0 48px}
+  h1{font-size:1.1rem;font-weight:normal;color:var(--soft);margin:0 0 6px}
+  .num{font-size:clamp(5rem,28vw,9rem);line-height:1;font-weight:bold;color:var(--accent);margin:0;letter-spacing:-.04em;min-height:1em}
+  .lead{font-size:1.5rem;margin:6px 0 22px}
+  .box{background:var(--card);border:2px solid var(--ink);border-radius:6px;padding:16px 18px;margin:18px 0}
+  .box p{margin:.4em 0}
+  ul{margin:.4em 0 0;padding-left:1.2em}
+  a.btn,button{display:inline-block;background:var(--ink);color:var(--bg);border:0;border-radius:6px;padding:12px 18px;
+       font:bold 1rem system-ui,sans-serif;text-decoration:none;cursor:pointer}
+  a.btn:focus-visible,button:focus-visible{outline:3px solid var(--accent);outline-offset:3px}
+  .small{font-size:.9rem;color:var(--soft)}
+</style>
+</head>
+<body>
+<main>
+  <h1>Escaneaste un QR desconocido en la calle.</h1>
+  <p class="num" id="num" aria-live="polite">…</p>
+  <p class="lead" id="lead">Calculando qué tan rápido caíste…</p>
+
+  <div class="box">
+    <p><b>Esto fue un experimento.</b> No pedimos ni guardamos datos personales, no hay nada que descargar y no te pasó nada. Guardamos solo un número anónimo de visita y el lugar del cartel.</p>
+    <p>Un estafador habría puesto aquí una página falsa de tu banco. Antes de escanear un QR de la calle:</p>
+    <ul>
+      <li>Revisa si es un sticker pegado encima de otro código.</li>
+      <li>Mira la dirección que muestra tu cámara antes de abrirla.</li>
+      <li>Nunca ingreses claves ni pagues desde un QR; escribe tú la dirección oficial.</li>
+    </ul>
+  </div>
+
+  <p id="count">En unos segundos te llevamos a algo que seguro conoces.</p>
+  <a class="btn" id="go" href="https://www.youtube.com/watch?v=dQw4w9WgXcQ" rel="noopener noreferrer">Ir ahora</a>
+  <button id="stop" type="button">Quedarme aquí</button>
+  <p class="small">Proyecto de un curso de seguridad informática. Contacto: tu-correo@ejemplo.cl</p>
+</main>
+<script>
+(function(){
+  var RICK="https://www.youtube.com/watch?v=dQw4w9WgXcQ";
+  var poster=(location.hash.slice(1)||location.search.replace(/^.*[?&]p=([^&]*).*$/,"$1")||"x").toLowerCase();
+  if(!/^[a-z0-9-]{1,12}$/.test(poster)) poster="x";
+  var $=function(i){return document.getElementById(i)};
+
+  function token(){
+    var t=null;
+    try{t=localStorage.getItem("qrexp_t")}catch(e){}
+    if(!t||!/^[0-9a-f]{32}$/.test(t)){
+      var a=new Uint8Array(16); crypto.getRandomValues(a);
+      t=Array.prototype.map.call(a,function(b){return("0"+b.toString(16)).slice(-2)}).join("");
+      try{localStorage.setItem("qrexp_t",t)}catch(e){}
+    }
+    return t;
+  }
+
+  var timer=null, left=8;
+  function startCountdown(){
+    $("count").textContent="Te llevamos en "+left+" s…";
+    timer=setInterval(function(){
+      left--;
+      if(left<=0){clearInterval(timer);location.href=RICK;return}
+      $("count").textContent="Te llevamos en "+left+" s…";
+    },1000);
+  }
+  $("stop").onclick=function(){clearInterval(timer);$("count").textContent="Listo, te quedas aquí. Gracias por participar.";$("stop").hidden=true};
+
+  fetch("/api/hit",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({t:token(),p:poster})})
+    .then(function(r){if(!r.ok)throw 0;return r.json()})
+    .then(function(d){
+      if(d.n){
+        $("num").textContent="#"+d.n;
+        $("lead").textContent="Eres la persona número "+d.n+" que cayó en este QR.";
+      }else{
+        $("num").textContent="🎣";$("lead").textContent="Caíste.";
+      }
+    })
+    .catch(function(){$("num").textContent="🎣";$("lead").textContent="Caíste (el contador no respondió, pero igual cuenta).";})
+    .then(startCountdown);
+})();
+</script>
+</body>
+</html>
