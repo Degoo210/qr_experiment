@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
-"""Genera un QR por póster. Uso: python3 make_qr.py https://tu-dominio.cl 8
-Crea qr_p01.png ... qr_p08.png apuntando a https://tu-dominio.cl/#p01 ... (el id del póster viaja en el #)."""
+"""Genera un QR por póster. Uso: python3 make_qr.py https://qr-experiment.onrender.com/ 8
+Crea qr_p01.png ... qr_p08.png apuntando a https://qr-experiment.onrender.com/#p01 ... (el id del póster viaja en el #)."""
 import sys, qrcode
 from qrcode.constants import ERROR_CORRECT_M
 base = sys.argv[1].rstrip("/"); n = int(sys.argv[2]) if len(sys.argv) > 2 else 1
