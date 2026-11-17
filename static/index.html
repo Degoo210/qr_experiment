@@ -17,6 +17,8 @@
   .box{background:var(--card);border:2px solid var(--ink);border-radius:6px;padding:16px 18px;margin:18px 0}
   .box p{margin:.4em 0}
   ul{margin:.4em 0 0;padding-left:1.2em}
+  .video{position:relative;width:100%;aspect-ratio:16/9;border:2px solid var(--ink);border-radius:6px;overflow:hidden;background:#000;margin:0 0 6px}
+  .video iframe{position:absolute;inset:0;width:100%;height:100%;border:0}
   a.btn,button{display:inline-block;background:var(--ink);color:var(--bg);border:0;border-radius:6px;padding:12px 18px;
        font:bold 1rem system-ui,sans-serif;text-decoration:none;cursor:pointer}
   a.btn:focus-visible,button:focus-visible{outline:3px solid var(--accent);outline-offset:3px}
@@ -29,6 +31,15 @@
   <p class="num" id="num" aria-live="polite">…</p>
   <p class="lead" id="lead">Calculando qué tan rápido caíste…</p>
 
+
+  <div class="video">
+    <iframe id="yt" title="Video sorpresa" loading="eager"
+      src="https://www.youtube-nocookie.com/embed/xsvZOUnXdWM?autoplay=1&mute=1&playsinline=1&rel=0"
+      allow="autoplay; encrypted-media; picture-in-picture; fullscreen" allowfullscreen
+      referrerpolicy="strict-origin-when-cross-origin"></iframe>
+  </div>
+  <p class="small">Si el video no parte solo, tócalo. Si no carga, <a href="https://www.youtube.com/watch?v=xsvZOUnXdWM" rel="noopener noreferrer">míralo en YouTube</a>.</p>
+
   <div class="box">
     <p><b>Esto fue un experimento.</b> No pedimos ni guardamos datos personales, no hay nada que descargar y no te pasó nada. Guardamos solo un número anónimo de visita.</p>
     <p>Un estafador habría puesto aquí una página falsa o te habría robado algún dato. Antes de escanear un QR de la calle:</p>
@@ -39,14 +50,10 @@
     </ul>
   </div>
 
-  <p id="count">En unos segundos te llevamos a algo que seguro conoces.</p>
-  <a class="btn" id="go" href="ttps://www.youtube.com/watch?v=xsvZOUnXdWM" rel="noopener noreferrer">Ir ahora</a>
-  <button id="stop" type="button">Quedarme aquí</button>
   <p class="small">Proyecto de un curso de seguridad computacional.</p>
 </main>
 <script>
 (function(){
-  var CAT="https://www.youtube.com/watch?v=xsvZOUnXdWM";
   var poster=(location.hash.slice(1)||location.search.replace(/^.*[?&]p=([^&]*).*$/,"$1")||"x").toLowerCase();
   if(!/^[a-z0-9-]{1,12}$/.test(poster)) poster="x";
   var $=function(i){return document.getElementById(i)};
@@ -62,17 +69,6 @@
     return t;
   }
 
-  var timer=null, left=8;
-  function startCountdown(){
-    $("count").textContent="Te llevamos en "+left+" s…";
-    timer=setInterval(function(){
-      left--;
-      if(left<=0){clearInterval(timer);location.href=CAT;return}
-      $("count").textContent="Te llevamos en "+left+" s…";
-    },1000);
-  }
-  $("stop").onclick=function(){clearInterval(timer);$("count").textContent="Listo, te quedas aquí. Gracias por participar.";$("stop").hidden=true};
-
   fetch("/api/hit",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({t:token(),p:poster})})
     .then(function(r){if(!r.ok)throw 0;return r.json()})
     .then(function(d){
@@ -83,8 +79,7 @@
         $("num").textContent="🎣";$("lead").textContent="Caíste.";
       }
     })
-    .catch(function(){$("num").textContent="🎣";$("lead").textContent="Caíste (el contador no respondió, pero igual cuenta).";})
-    .then(startCountdown);
+    .catch(function(){$("num").textContent="🎣";$("lead").textContent="Caíste (el contador no respondió, pero igual cuenta).";});
 })();
 </script>
 </body>
