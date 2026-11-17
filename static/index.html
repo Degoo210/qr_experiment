@@ -40,13 +40,13 @@
   </div>
 
   <p id="count">En unos segundos te llevamos a algo que seguro conoces.</p>
-  <a class="btn" id="go" href="https://www.youtube.com/watch?v=dQw4w9WgXcQ" rel="noopener noreferrer">Ir ahora</a>
+  <a class="btn" id="go" href="ttps://www.youtube.com/watch?v=xsvZOUnXdWM" rel="noopener noreferrer">Ir ahora</a>
   <button id="stop" type="button">Quedarme aquí</button>
-  <p class="small">Proyecto de un curso de seguridad computacional. Contacto: diegoucpe@gmail.com</p>
+  <p class="small">Proyecto de un curso de seguridad computacional.</p>
 </main>
 <script>
 (function(){
-  var RICK="https://www.youtube.com/watch?v=dQw4w9WgXcQ";
+  var CAT="https://www.youtube.com/watch?v=xsvZOUnXdWM";
   var poster=(location.hash.slice(1)||location.search.replace(/^.*[?&]p=([^&]*).*$/,"$1")||"x").toLowerCase();
   if(!/^[a-z0-9-]{1,12}$/.test(poster)) poster="x";
   var $=function(i){return document.getElementById(i)};
@@ -67,7 +67,7 @@
     $("count").textContent="Te llevamos en "+left+" s…";
     timer=setInterval(function(){
       left--;
-      if(left<=0){clearInterval(timer);location.href=RICK;return}
+      if(left<=0){clearInterval(timer);location.href=CAT;return}
       $("count").textContent="Te llevamos en "+left+" s…";
     },1000);
   }
